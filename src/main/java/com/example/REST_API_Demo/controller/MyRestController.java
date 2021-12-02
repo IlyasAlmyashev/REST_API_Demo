@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class MyRestController {
 
     private final RestTemplate restTemplate;
+    private final String url = "http://91.241.64.178:7081/api/users";
     private HttpHeaders headers;
 
     public MyRestController(RestTemplate restTemplate) {
@@ -34,30 +35,27 @@ public class MyRestController {
         headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-        List<String> cookies = restTemplate.getForEntity("http://91.241.64.178:7081/api/users", String.class)
+        List<String> cookies = restTemplate.getForEntity(url, String.class)
                 .getHeaders().get("Set-Cookie");
 
         System.out.println(cookies);
         headers.set("Cookie", cookies.stream().collect(Collectors.joining(";")));
-        return restTemplate.exchange("http://91.241.64.178:7081/api/users",
-                HttpMethod.GET, new HttpEntity<>(headers), String.class).getBody();
+        return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class).getBody();
     }
 
     @PostMapping(value = "")
     public String addNewUser(@RequestBody User user) {
-        return restTemplate.exchange("http://91.241.64.178:7081/api/users",
-                HttpMethod.POST, new HttpEntity<>(user, headers), String.class).getBody();
+        return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(user, headers), String.class).getBody();
     }
 
     @PutMapping("")
     public String updateUser(@RequestBody User user) {
-        return restTemplate.exchange("http://91.241.64.178:7081/api/users",
-                HttpMethod.PUT, new HttpEntity<>(user, headers), String.class).getBody();
+        return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(user, headers), String.class).getBody();
     }
 
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Long id) {
-        return restTemplate.exchange("http://91.241.64.178:7081/api/users/" + id,
+        return restTemplate.exchange(url + "/" + id,
                 HttpMethod.DELETE, new HttpEntity<>(headers), String.class).getBody();
     }
 }
